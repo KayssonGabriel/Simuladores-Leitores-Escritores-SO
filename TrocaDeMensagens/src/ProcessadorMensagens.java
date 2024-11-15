@@ -21,6 +21,8 @@ public class ProcessadorMensagens implements Runnable {
                     case ESCRITA:
                         recurso.escrever(mensagem.getId());
                         break;
+                    case FIM:
+                        return;
                 }
             }
         } catch (InterruptedException e) {

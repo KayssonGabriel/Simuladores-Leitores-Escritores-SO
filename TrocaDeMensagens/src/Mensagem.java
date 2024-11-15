@@ -1,5 +1,5 @@
 public class Mensagem {
-    public enum Tipo {LEITURA, ESCRITA}
+    public enum Tipo {LEITURA, ESCRITA, FIM}
 
     private final Tipo tipo;
     private final int id;

@@ -1,6 +1,9 @@
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LeitoresEscritoresTrocaDeMensagens {
 
     public static void main(String[] args) {
@@ -11,29 +14,35 @@ public class LeitoresEscritoresTrocaDeMensagens {
         Thread processador = new Thread(new ProcessadorMensagens(recurso, filaMensagens));
         processador.start();
 
-        // Threads leitoras
-        for (int i = 1; i <= 5; i++) {
-            final int id = i;
-            new Thread(() -> {
-                try {
-                    filaMensagens.put(new Mensagem(Mensagem.Tipo.LEITURA, id));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }, "Leitor " + id).start();
+        List<Thread> produtores = new ArrayList<>();
+        for (int id = 1; id <= 5; id++) {
+            produtores.add(iniciarProdutor(filaMensagens, Mensagem.Tipo.LEITURA, id, "Leitor"));
+        }
+        for (int id = 1; id <= 2; id++) {
+            produtores.add(iniciarProdutor(filaMensagens, Mensagem.Tipo.ESCRITA, id, "Escritor"));
         }
 
-        // Threads escritoras
-        for (int i = 1; i <= 2; i++) {
-            final int id = i;
-            new Thread(() -> {
-                try {
-                    filaMensagens.put(new Mensagem(Mensagem.Tipo.ESCRITA, id));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }, "Escritor " + id).start();
+        try {
+            for (Thread produtor : produtores) {
+                produtor.join();
+            }
+            filaMensagens.put(new Mensagem(Mensagem.Tipo.FIM, 0));
+            processador.join();
+        } catch (InterruptedException e) {
+            processador.interrupt();
+            Thread.currentThread().interrupt();
         }
     }
-}
 
+    private static Thread iniciarProdutor(BlockingQueue<Mensagem> fila, Mensagem.Tipo tipo, int id, String nome) {
+        Thread produtor = new Thread(() -> {
+            try {
+                fila.put(new Mensagem(tipo, id));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, nome + " " + id);
+        produtor.start();
+        return produtor;
+    }
+}
