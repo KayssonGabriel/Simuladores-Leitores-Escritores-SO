@@ -21,3 +21,15 @@ java -cp build/mutex LeitoresEscritoresMutex
 ~~~
 
 Para trocar de versão, selecione a pasta e a classe da tabela e use outro diretório de saída. A ordem das mensagens varia entre execuções. A versão com troca de mensagens encerra depois de processar todas as leituras e escritas.
+
+## Enunciado original
+
+Disciplina: Sistemas Operacionais
+
+Considere o problema dos Leitores e Escritores apresentados na aula passada.
+Implementar em JAVA um simulador para o problema dos Leitores e Escritores usando uma versão em:
+1) Semáforos;
+2) Mutex;
+3) Monitores;
+4) Troca de Mensagens;
+5) Barreiras.
